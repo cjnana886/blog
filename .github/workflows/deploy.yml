@@ -20,17 +20,32 @@ jobs:
         with:
           version: 8 # 這裡可以換成你要的 pnpm 版本
 
-      - run: pnpm install --no-frozen-lockfile
-      - run: pnpm run build
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+  
+      - name: Build VitePress
+        run: pnpm run build
 
       - name: Deploy to GitHub Pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # 設定 git 使用者資訊
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions@github.com"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git add -A
+          
+          # 切換到 gh-pages 分支，並清空舊檔案
+          git checkout --orphan gh-pages
+          git rm -rf .
+          
+          # 解除 .gitignore 限制，確保 dist 目錄可被追蹤
+          echo -e "\n!docs/.vitepress/dist/" >> .gitignore
+          git add -f docs/.vitepress/dist/
+          
+          # 複製 dist 目錄下的檔案到根目錄，並推送到遠端
+          cp -r docs/.vitepress/dist/* .
+          git add .
           git commit -m "Deploy VitePress" || echo "No changes to commit"
-          git push -f origin HEAD:gh-pages
+          git push -f origin gh-pages
 
