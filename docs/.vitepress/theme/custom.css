@@ -1,0 +1,35 @@
+/* .vitepress/theme/custom.css */
+:root {
+  --vp-c-brand-1: #646cff;
+  --vp-c-brand-2: #747bff;
+}
+
+/* .VPSidebarGroup {
+  :not(.active) {
+    .text-1 {
+      font-weight: bold;
+      color: black;  
+    }
+  }
+} */
+
+.nav {
+  .group + .group {
+    margin: 0;
+    border: 0;
+    padding: 0;
+  }
+
+  .group {
+    .VPSidebarGroup {
+      &.collapsed {
+        padding-bottom: 22px;
+      }
+
+      .items:nth-child(n+2) {
+        margin-left: 15px;
+      }
+    }
+  }
+}
+
